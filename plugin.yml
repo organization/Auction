@@ -1,0 +1,5 @@
+name: Auction
+main: nlog\Auction\Auction
+version: 1.000000
+author: nlog
+api: 4.0.0
