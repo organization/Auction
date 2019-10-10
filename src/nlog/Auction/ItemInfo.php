@@ -1,13 +1,13 @@
 <?php
 
-namespace nlog\Auction;
+namespace nlog\auction;
 
-class ItemInfo{
-	
+class ItemInfo {
+
 	public static function getItemName(int $id, int $damage) {
 		if (class_exists(\nlog\NLOGCore\ItemInfo::class)) {
 			return \nlog\NLOGCore\ItemInfo::getItemName($id, $damage);
-		}else{
+		} else {
 			$item = [
 					"0:0" => "공기",
 					"1:0" => "돌",
@@ -203,7 +203,7 @@ class ItemInfo{
 					"112:0" => "네더 벽돌 블럭",
 					"113:0" => "네더 벽돌 울타리",
 					"114:0" => "네더 벽돌 계단",
-					//"115:0" => "네더 와트 (블럭)", // TODO: enable this
+				//"115:0" => "네더 와트 (블럭)", // TODO: enable this
 					"116:0" => "마법부여대",
 					"117:0" => "양조기 (블럭)",
 					"118:0" => "가마솥 (블럭)",
@@ -782,12 +782,12 @@ class ItemInfo{
 			];
 			if (isset($item[$id . ":" . $damage])) {
 				return $item[$id . ":" . $damage];
-			}elseif ((Item::get($id, $damage))->getName() !== "Unknown") {
+			} elseif ((Item::get($id, $damage))->getName() !== "Unknown") {
 				return (Item::get($id, $damage))->getName();
-			}else{
+			} else {
 				return $id . ":" . $damage;
 			}
 		}
 	}
-	
+
 }

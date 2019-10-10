@@ -2,27 +2,27 @@
 
 namespace nlog\Auction\commands;
 
-use pocketmine\command\PluginCommand;
 use nlog\Auction\Auction;
-use pocketmine\command\CommandSender;
-use pocketmine\Player;
-use pocketmine\scheduler\TaskHandler;
+use nlog\Auction\ItemInfo;
 use nlog\Auction\tasks\AuctionTask;
 use onebone\economyapi\EconomyAPI;
-use nlog\Auction\ItemInfo;
+use pocketmine\command\CommandSender;
+use pocketmine\command\PluginCommand;
+use pocketmine\Player;
+use pocketmine\scheduler\TaskHandler;
 
-class AuctionCommand extends PluginCommand{
-	
+class AuctionCommand extends PluginCommand {
+
 	/** @var TaskHandler|null */
 	public $taskHandler = null;
-	
+
 	public function __construct(Auction $owner) {
 		parent::__construct("경매", $owner);
 		$this->setDescription("경매 명령어");
 		$this->taskHandler = null;
 	}
-	
-	public function execute(CommandSender $sender, string $commandLabel, array $args): bool{
+
+	public function execute(CommandSender $sender, string $commandLabel, array $args): bool {
 		if (!$sender instanceof Player) {
 			$sender->sendMessage(Auction::$prefix . "인게임에서 실행해주세요.");
 			return true;
@@ -64,11 +64,11 @@ class AuctionCommand extends PluginCommand{
 				$sender->sendMessage(Auction::$prefix . "해당 아이템을 경매하실 수 없습니다..");
 				return true;
 			}
-            $name = ItemInfo::getItemName($item->getId(), $item->getMeta());
+			$name = ItemInfo::getItemName($item->getId(), $item->getMeta());
 			if ($name === $item->getId() . ":" . $item->getMeta() && !$item->hasCustomName()) {
-                $sender->sendMessage(Auction::$prefix . "이름이 없는 아이템은 경매할 수 없습니다.");
-                return true;
-            }
+				$sender->sendMessage(Auction::$prefix . "이름이 없는 아이템은 경매할 수 없습니다.");
+				return true;
+			}
 			$item->setCount($count);
 			if (!$sender->getInventory()->contains($item)) {
 				$sender->sendMessage(Auction::$prefix . "아이템이 부족합니다.");
@@ -78,16 +78,16 @@ class AuctionCommand extends PluginCommand{
 			$sender->getInventory()->removeItem($item);
 			$this->getPlugin()->getServer()->broadcastMessage(Auction::$prefix . "{$sender->getName()}님이 {$name} {$item->getCount()}개를 최저가 {$price}원으로 경매를 시작했습니다.");
 			$this->getPlugin()->getServer()->broadcastMessage(Auction::$prefix . "/경매 입찰 <가격> 으로 경매에 참여하세요.");
-		}elseif ($args[0] === "입찰") {
+		} elseif ($args[0] === "입찰") {
 			if ($this->taskHandler === null) {
 				$sender->sendMessage(Auction::$prefix . "진행중인 경매가 없습니다.");
 				return true;
 			}
-			if($this->taskHandler->getTask()->seller === $sender->getName()) {
+			if ($this->taskHandler->getTask()->seller === $sender->getName()) {
 				$sender->sendMessage(Auction::$prefix . "당신은 판매자이기 때문에 입찰할 수 없습니다.");
 				return true;
 			}
-			if($this->taskHandler->getTask()->customer === $sender->getName()) {
+			if ($this->taskHandler->getTask()->customer === $sender->getName()) {
 				$sender->sendMessage(Auction::$prefix . "당신은 이미 경매에 참여했습니다.");
 				return true;
 			}
@@ -123,11 +123,11 @@ class AuctionCommand extends PluginCommand{
 			$this->taskHandler = $this->getPlugin()->getScheduler()->scheduleDelayedTask(new AuctionTask($this->getPlugin(), $item, $name, $sender->getName(), $money, $timeLeft), $timeLeft * 20);
 			$this->getPlugin()->getServer()->broadcastMessage(Auction::$prefix . "{$sender->getName()}님이 {$money}원으로 입찰하였습니다.");
 			$this->getPlugin()->getServer()->broadcastMessage(Auction::$prefix . "입찰할 사람이 없을 시 {$timeLeft}초 후 입찰이 종료됩니다.");
-		}else{
+		} else {
 			$sender->sendMessage(Auction::$prefix . "/경매 시작 <수량> <최소 가격>");
 			$sender->sendMessage(Auction::$prefix . "/경매 입찰 <가격>");
 		}
 		return true;
 	}
-	
+
 }
